@@ -7,15 +7,19 @@ import {
   } from "react-router-dom";
 import About from "./components/About";
 import Dashboard from "./components/Dashboard";
-import App from "./App"
+import Navbar from "./Navbar"
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
+        element: <Navbar />,
         children: [
             {
-                path: "About",
+                path: "/",
+                element: <About />
+            },
+            {
+                path: "/About",
                 element: <About />
             },
             {

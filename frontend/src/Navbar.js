@@ -1,7 +1,8 @@
-import "./css/App.css"
+import "./css/Navbar.css"
 import { Outlet, Link } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function App() {
+export default function Navbar() {
     return (
         <>
             <ul className="nav-bar">

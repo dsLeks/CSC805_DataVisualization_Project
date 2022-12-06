@@ -1,0 +1,18 @@
+body {
+    min-height: 100%;
+}
+
+svg {
+    background-color: white;
+}
+
+#canvas {
+    min-width: 1000px;
+    min-height: 600px;
+}
+
+#tooltip {
+    visibility: hidden;
+    height: auto;
+    width: auto;
+}

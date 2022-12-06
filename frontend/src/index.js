@@ -1,39 +1,10 @@
-import {StrictMode} from "react";
-import {createRoot} from "react-dom/client";
-import {
-    createBrowserRouter,
-    RouterProvider,
-    Route,
-  } from "react-router-dom";
-import About from "./components/About";
-import Dashboard from "./components/Dashboard";
-import Navbar from "./Navbar"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Navbar />,
-        children: [
-            {
-                path: "/",
-                element: <About />
-            },
-            {
-                path: "/About",
-                element: <About />
-            },
-            {
-                path: "Dashboard",
-                element: <Dashboard />
-            }
-        ]
-    },
-]);
-
-const container = document.getElementById("root");
-const root = createRoot(container);
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <StrictMode>
-        <RouterProvider router={router} />
-    </StrictMode>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );

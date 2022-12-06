@@ -1,0 +1,410 @@
+[
+ {
+   "Year": 2015,
+   "State": "Alabama",
+   "ST": "AL",
+   "FIPS State": 1,
+   "Population": 4858979,
+   "Estimated Age": 12.39
+ },
+ {
+   "Year": 2015,
+   "State": "Alaska",
+   "ST": "AK",
+   "FIPS State": 2,
+   "Population": 734993,
+   "Estimated Age": 16.19
+ },
+ {
+   "Year": 2015,
+   "State": "Arizona",
+   "ST": "AZ",
+   "FIPS State": 4,
+   "Population": 6828065,
+   "Estimated Age": 22.17
+ },
+ {
+   "Year": 2015,
+   "State": "Arkansas",
+   "ST": "AR",
+   "FIPS State": 5,
+   "Population": 2978204,
+   "Estimated Age": 15.69
+ },
+ {
+   "Year": 2015,
+   "State": "California",
+   "ST": "CA",
+   "FIPS State": 6,
+   "Population": 39144818,
+   "Estimated Age": 17.84
+ },
+ {
+   "Year": 2015,
+   "State": "Colorado",
+   "ST": "CO",
+   "FIPS State": 8,
+   "Population": 5456574,
+   "Estimated Age": 18.61
+ },
+ {
+   "Year": 2015,
+   "State": "Connecticut",
+   "ST": "CT",
+   "FIPS State": 9,
+   "Population": 3590886,
+   "Estimated Age": 17.55
+ },
+ {
+   "Year": 2015,
+   "State": "Delaware",
+   "ST": "DE",
+   "FIPS State": 10,
+   "Population": 945934,
+   "Estimated Age": 17.05
+ },
+ {
+   "Year": 2015,
+   "State": "District of Columbia",
+   "ST": "DC",
+   "FIPS State": 11,
+   "Population": 672228,
+   "Estimated Age": 21.05
+ },
+ {
+   "Year": 2015,
+   "State": "Florida",
+   "ST": "FL",
+   "FIPS State": 12,
+   "Population": 20271272,
+   "Estimated Age": 19.63
+ },
+ {
+   "Year": 2015,
+   "State": "Georgia",
+   "ST": "GA",
+   "FIPS State": 13,
+   "Population": 10214860,
+   "Estimated Age": 14.68
+ },
+ {
+   "Year": 2015,
+   "State": "Hawaii",
+   "ST": "HI",
+   "FIPS State": 15,
+   "Population": 1431603,
+   "Estimated Age": 15.05
+ },
+ {
+   "Year": 2015,
+   "State": "Idaho",
+   "ST": "ID",
+   "FIPS State": 16,
+   "Population": 1654930,
+   "Estimated Age": 16.84
+ },
+ {
+   "Year": 2015,
+   "State": "Illinois",
+   "ST": "IL",
+   "FIPS State": 17,
+   "Population": 12859995,
+   "Estimated Age": 13.71
+ },
+ {
+   "Year": 2015,
+   "State": "Indiana",
+   "ST": "IN",
+   "FIPS State": 18,
+   "Population": 6619680,
+   "Estimated Age": 16.22
+ },
+ {
+   "Year": 2015,
+   "State": "Iowa",
+   "ST": "IA",
+   "FIPS State": 19,
+   "Population": 3123899,
+   "Estimated Age": 9.43
+ },
+ {
+   "Year": 2015,
+   "State": "Kansas",
+   "ST": "KS",
+   "FIPS State": 20,
+   "Population": 2911641,
+   "Estimated Age": 12.36
+ },
+ {
+   "Year": 2015,
+   "State": "Kentucky",
+   "ST": "KY",
+   "FIPS State": 21,
+   "Population": 4425092,
+   "Estimated Age": 22.78
+ },
+ {
+   "Year": 2015,
+   "State": "Louisiana",
+   "ST": "LA",
+   "FIPS State": 22,
+   "Population": 4670724,
+   "Estimated Age": 15.81
+ },
+ {
+   "Year": 2015,
+   "State": "Maine",
+   "ST": "ME",
+   "FIPS State": 23,
+   "Population": 1329328,
+   "Estimated Age": 15.93
+ },
+ {
+   "Year": 2015,
+   "State": "Maryland",
+   "ST": "MD",
+   "FIPS State": 24,
+   "Population": 6006401,
+   "Estimated Age": 17.42
+ },
+ {
+   "Year": 2015,
+   "State": "Massachusetts",
+   "ST": "MA",
+   "FIPS State": 25,
+   "Population": 6794422,
+   "Estimated Age": 19.19
+ },
+ {
+   "Year": 2015,
+   "State": "Michigan",
+   "ST": "MI",
+   "FIPS State": 26,
+   "Population": 9922576,
+   "Estimated Age": 16.59
+ },
+ {
+   "Year": 2015,
+   "State": "Minnesota",
+   "ST": "MN",
+   "FIPS State": 27,
+   "Population": 5489594,
+   "Estimated Age": 10.22
+ },
+ {
+   "Year": 2015,
+   "State": "Mississippi",
+   "ST": "MS",
+   "FIPS State": 28,
+   "Population": 2992333,
+   "Estimated Age": 12.8
+ },
+ {
+   "Year": 2015,
+   "State": "Missouri",
+   "ST": "MO",
+   "FIPS State": 29,
+   "Population": 6083672,
+   "Estimated Age": 17.17
+ },
+ {
+   "Year": 2015,
+   "State": "Montana",
+   "ST": "MT",
+   "FIPS State": 30,
+   "Population": 1032949,
+   "Estimated Age": 15.69
+ },
+ {
+   "Year": 2015,
+   "State": "Nebraska",
+   "ST": "NE",
+   "FIPS State": 31,
+   "Population": 1896190,
+   "Estimated Age": 8.44
+ },
+ {
+   "Year": 2015,
+   "State": "Nevada",
+   "ST": "NV",
+   "FIPS State": 32,
+   "Population": 2890845,
+   "Estimated Age": 22.92
+ },
+ {
+   "Year": 2015,
+   "State": "New Hampshire",
+   "ST": "NH",
+   "FIPS State": 33,
+   "Population": 1330608,
+   "Estimated Age": 16.85
+ },
+ {
+   "Year": 2015,
+   "State": "New Jersey",
+   "ST": "NJ",
+   "FIPS State": 34,
+   "Population": 8958013,
+   "Estimated Age": 14.38
+ },
+ {
+   "Year": 2015,
+   "State": "New Mexico",
+   "ST": "NM",
+   "FIPS State": 35,
+   "Population": 2085109,
+   "Estimated Age": 25.66
+ },
+ {
+   "Year": 2015,
+   "State": "New York",
+   "ST": "NY",
+   "FIPS State": 36,
+   "Population": 19795791,
+   "Estimated Age": 8.89
+ },
+ {
+   "Year": 2015,
+   "State": "North Carolina",
+   "ST": "NC",
+   "FIPS State": 37,
+   "Population": 10042802,
+   "Estimated Age": 17.76
+ },
+ {
+   "Year": 2015,
+   "State": "North Dakota",
+   "ST": "ND",
+   "FIPS State": 38,
+   "Population": 756927,
+   "Estimated Age": 6.74
+ },
+ {
+   "Year": 2015,
+   "State": "Ohio",
+   "ST": "OH",
+   "FIPS State": 39,
+   "Population": 11613423,
+   "Estimated Age": 15.84
+ },
+ {
+   "Year": 2015,
+   "State": "Oklahoma",
+   "ST": "OK",
+   "FIPS State": 40,
+   "Population": 3911338,
+   "Estimated Age": 21.79
+ },
+ {
+   "Year": 2015,
+   "State": "Oregon",
+   "ST": "OR",
+   "FIPS State": 41,
+   "Population": 4028977,
+   "Estimated Age": 15.83
+ },
+ {
+   "Year": 2015,
+   "State": "Pennsylvania",
+   "ST": "PA",
+   "FIPS State": 42,
+   "Population": 12802503,
+   "Estimated Age": 16.94
+ },
+ {
+   "Year": 2015,
+   "State": "Rhode Island",
+   "ST": "RI",
+   "FIPS State": 44,
+   "Population": 1056298,
+   "Estimated Age": 19.45
+ },
+ {
+   "Year": 2015,
+   "State": "South Carolina",
+   "ST": "SC",
+   "FIPS State": 45,
+   "Population": 4896146,
+   "Estimated Age": 12.96
+ },
+ {
+   "Year": 2015,
+   "State": "South Dakota",
+   "ST": "SD",
+   "FIPS State": 46,
+   "Population": 858469,
+   "Estimated Age": 8.7
+ },
+ {
+   "Year": 2015,
+   "State": "Tennessee",
+   "ST": "TN",
+   "FIPS State": 47,
+   "Population": 6600299,
+   "Estimated Age": 21.64
+ },
+ {
+   "Year": 2015,
+   "State": "Texas",
+   "ST": "TX",
+   "FIPS State": 48,
+   "Population": 27469114,
+   "Estimated Age": 12.93
+ },
+ {
+   "Year": 2015,
+   "State": "Utah",
+   "ST": "UT",
+   "FIPS State": 49,
+   "Population": 2995919,
+   "Estimated Age": 22.8
+ },
+ {
+   "Year": 2015,
+   "State": "Vermont",
+   "ST": "VT",
+   "FIPS State": 50,
+   "Population": 626042,
+   "Estimated Age": 15.48
+ },
+ {
+   "Year": 2015,
+   "State": "Virginia",
+   "ST": "VA",
+   "FIPS State": 51,
+   "Population": 8382993,
+   "Estimated Age": 15.6
+ },
+ {
+   "Year": 2015,
+   "State": "Washington",
+   "ST": "WA",
+   "FIPS State": 53,
+   "Population": 7170351,
+   "Estimated Age": 19.87
+ },
+ {
+   "Year": 2015,
+   "State": "West Virginia",
+   "ST": "WV",
+   "FIPS State": 54,
+   "Population": 1844128,
+   "Estimated Age": 22.98
+ },
+ {
+   "Year": 2015,
+   "State": "Wisconsin",
+   "ST": "WI",
+   "FIPS State": 55,
+   "Population": 5771337,
+   "Estimated Age": 12.11
+ },
+ {
+   "Year": 2015,
+   "State": "Wyoming",
+   "ST": "WY",
+   "FIPS State": 56,
+   "Population": 586107,
+   "Estimated Age": 16.01
+ }
+]

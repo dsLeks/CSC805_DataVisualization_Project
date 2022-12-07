@@ -16,3 +16,14 @@ svg {
     height: auto;
     width: auto;
 }
+
+#svgTag {
+    padding-left: 50px;
+    padding-top: 20px;
+}
+
+#legend {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+}

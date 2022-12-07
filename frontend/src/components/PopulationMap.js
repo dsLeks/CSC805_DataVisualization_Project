@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 var d3 = require("d3");
 import geojsonData from './geojsonData.json';
+import countyData from './countyData.json';
 import { useData } from './useData';
 import { legendColor } from 'd3-svg-legend';
   
@@ -20,49 +21,8 @@ const PopulationMap = () => {
   const max_population = 40000000;
   const min_population = 500000;
   const colorScale = d3.scaleSequential(d3.schemeGreens[3])
-                       .domain([600000, 5800000]);
+                       .domain([0, 10000000]);
 
-  const filter_for_population = (async (jsondata, myCallback) => {
-    const jsonFilteredData = jsondata.map((d) => {
-      return {
-          'fips_state': parseInt(d.fips_state),
-          'population': parseInt(d.population),
-          'state' : d.state,
-          'year' : parseInt(d.year),
-      }     
-    })
-     return myCallback(jsonFilteredData);
-  }) 
-  
-
-  const combine_years_for_population = (async (filteredData) => {
-    
-    const containsObject = (obj, list) => {
-    var i; 
-    for(i = 0; i < list.length; i++) {
-        if(list[i].state == obj.state) {
-            return i;
-        }
-    }
-
-    return i; 
-    }
-
-
-    var i; 
-    let newFilteredData = [];
-    newFilteredData.push(filteredData[0]);
-
-    for(i = 1; i < filteredData.length; i++) {
-        const index = containsObject(filteredData[i], newFilteredData);
-        if(index < newFilteredData.length && newFilteredData.length > 0) {
-            newFilteredData[index].population += filteredData[i].population;   
-        } else {
-            newFilteredData.push(filteredData[i]);
-        }
-    }
-    return newFilteredData; 
-  })
 
   //Adding a tooltip
   const tooltip = d3.select('body').append('div')
@@ -74,7 +34,7 @@ const PopulationMap = () => {
     d3.selectAll(".State")
         .transition()
         .duration(300)
-        .style("opacity", .5)
+        .style("opacity", .2)
         .style("stroke", "transparent")
     d3.select(this)
         .transition()
@@ -106,21 +66,60 @@ const PopulationMap = () => {
             .style("opacity", 0);
   }
 
-  useEffect(() => {
-    if(typeof data !== 'undefined')
-    {  
-      filter_for_population(data, combine_years_for_population)
-        .then((pop_data) => {
-            setPopulation(pop_data);
-        });
-    }
-  }, [data]);
+  const dataPerYear = (year, data) => {
+    const yearWiseData = data.filter((d) => {
+      return d.Year == year;
+    })
+    const stateFips = [];
+    const statewiseData = [];
+    yearWiseData.forEach(element => {
+      const deathRate = element["Estimated Age-adjusted Death Rate, 16 Categories (in ranges)"];
+      if(deathRate.includes("-")){
+        const split = deathRate.split("-");
+        const start = parseInt(split[0]);
+        const end = parseInt(split[1]);
+        element.deathRate = (start + end) / 2;
+      }else{
+        element.deathRate = parseInt(deathRate.substring(1, deathRate.length));
+      }
+      if(!stateFips.includes(element["FIPS State"])){
+        stateFips.push(element["FIPS State"]);
+      }
+      // int start = element
+      // element.deathRate = 
+    });
   
+    stateFips.forEach(element => {
+      const stateData = yearWiseData.filter((d) => {
+        return d["FIPS State"] == element;
+      })
+      let sum = 0;
+      stateData.forEach(element => {
+        sum += element.deathRate;
+      });
+      let totalpopulation = 0;
+      stateData.forEach(element => {
+        totalpopulation += parseInt(element.Population);
+      });
+      const state = {
+        "StateFIPS": element,
+        "deathRate": sum / stateData.length,
+        "population": totalpopulation
+      }
+      statewiseData.push(state);
+    });
+    return statewiseData;
+  }
+
+
+  const yearWiseData = dataPerYear("2011", countyData);
+  //console.log(yearWiseData);
   
   useEffect(() => {  
+
     var index;         
     //Drawing the Choropleth Map - for population 
-    if((population_data.length > 1) && (typeof population_data !== 'undefined')) {
+    if((yearWiseData.length > 1) && (typeof yearWiseData !== 'undefined')) {
       const svg = d3.select(svgRef.current)
                     .attr("width", width)
                     .attr("height", height);
@@ -141,9 +140,9 @@ const PopulationMap = () => {
                       //console.log(d);
                       var i;
                       var d_state_fips = d.properties.STATEFP;
-                      for(i = 0; i < population_data.length; i++) {
-                        if(d_state_fips == population_data[i].fips_state) {
-                          return colorScale(population_data[i].population);
+                      for(i = 0; i < yearWiseData.length; i++) {
+                        if(d_state_fips == yearWiseData[i].StateFIPS) {
+                          return colorScale(yearWiseData[i].population);
                         }
                       }
                     })
@@ -160,66 +159,11 @@ const PopulationMap = () => {
           
         )
       
+    } else {
+          console.log("yearWiseData is empty");
+        } 
 
-        // //appending the Legend
-        // const lsvg = d3.select(lsvgRef.current)
-        //                .attr("position", "absolute")
-        //                .attr("left", "100px")
-        //                .attr("top", "800px");
-        // var defs = lsvg.append("defs");
-
-        // var linearGradient = defs.append("linearGradient").attr("id", 'linear-gradient');
-        // linearGradient.attr("x1", "0%")
-        //               .attr("y1", "0%")
-        //               .attr("x2", "100%")
-        //               .attr("y2", "0%");
-        // linearGradient.append("stop")
-        //               .attr("offset", "0%")
-        //               .attr("stop-color", "#eaf9e5");
-        // linearGradient.append("stop")
-        //               .attr("offset", "50%")
-        //               .attr("stop-color", "#6ac263");
-        // linearGradient.append("stop")
-        //               .append("offset", "100%")
-        //               .attr("stop-color", "#001f00");
-        // lsvg.append("rect")
-        //    .attr("width", 550)
-        //    .attr("height", 20)
-        //    .style("fill", "url(#linear-gradient)");
-    // const legend = svg.selectAll("g.legendEntry")
-    //                 .data(colorScale.range())
-    //                 .enter()
-    //                 .append("g").attr("class", "legendEntry")
-    
-    // legend.append('rect')
-    //       .attr("x", width - 600)
-    //       .attr("y", function(d, i) {
-    //         return i * 10;
-    //       })
-    //       .attr("width", 10)
-    //       .attr("height", 10)
-    //       .style("stroke", "black")
-    //       .style("stroke-width", 1)
-    //       .style("fill", function(d) {
-    //         return d; 
-    //       })
-
-    // legend.append('text')
-    //       .attr("x" , width - 580)
-    //       .attr("y", function(d,i) {
-    //         return i * 10;
-    //       })
-    //       .attr("dy", "0.8em")
-    //       .text(function(d,i) {
-    //         var extent = d3.extent(colorScale(d));
-    //         console.log(extent);
-    //       })
-
-} else {
-      console.log("population_data is empty");
-    } 
-
-  }, [population_data]);
+  }, [yearWiseData]);
 
 
 

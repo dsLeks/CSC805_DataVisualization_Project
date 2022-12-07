@@ -21,6 +21,11 @@ export default function Navbar() {
             <button className="nav-item-link">StateMap</button>
           </Link>
         </li>
+        <li className="nav-item">
+          <Link to={`CountyMap`}>
+            <button className="nav-item-link">CountyMap</button>
+          </Link>
+        </li>
       </ul>
       <div>
         <Outlet />

@@ -16,6 +16,11 @@ export default function Navbar() {
                         <button className="nav-item-link">Dashboard</button>
                     </Link>
                 </li>
+                <li className="nav-item">
+                    <Link to={`CountyMap`}>
+                        <button className="nav-item-link">County Map</button>
+                    </Link>
+                </li>
             </ul>
             <div>
                 <Outlet />

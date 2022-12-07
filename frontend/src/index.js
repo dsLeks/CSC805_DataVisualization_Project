@@ -8,6 +8,7 @@ import {
 import About from "./components/About";
 import Dashboard from "./components/Dashboard";
 import Navbar from "./Navbar"
+import CountyMap from "./components/CountyMap"
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: "Dashboard",
                 element: <Dashboard />
+            },
+            {
+                path: "CountyMap",
+                element: <CountyMap />
             }
         ]
     },

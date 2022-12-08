@@ -68,7 +68,20 @@ const CountyMap = () => {
     React.useState("deathRateDropdown");
   const [selectedState, setSelectedState] = useState("Alabama");
   const [selectedStateId, setSelectedStateId] = useState("1");
+  const[tooltipData, setTooltipData] = useState([]);
 
+  const getTest = (props) => {
+    let text = "";
+    
+    tooltipData.forEach((element) => {
+      if (element["FIPS"] == props.GEOID) {
+        console.log("element", element);
+        text = element["County"] + " " + " deathRate=" + element.deathRate;
+      }
+    });
+    return text;
+  };
+  
   useEffect(() => {
     const yearData = countyData.filter((d) => {
       return d.Year == selectedYear;
@@ -118,7 +131,8 @@ const CountyMap = () => {
       .style("border-radius", "5px")
       .style("background-color", "#ebf8e7")
       .style("padding", "5px")
-      .text(d.target.__data__.properties.COUNTY_STATE_NAME)
+      // .text(d.target.__data__.properties.COUNTY_STATE_NAME)
+      .text(getTest(d.target.__data__.properties))
       .transition()
       .duration(300);
   };
@@ -139,6 +153,7 @@ const CountyMap = () => {
       countyData,
       selectedStateId
     );
+    setTooltipData(yearStateWiseData);
     drawMap(yearStateWiseData);
   }, [selectedYear, selectedOption, selectedStateId]);
 

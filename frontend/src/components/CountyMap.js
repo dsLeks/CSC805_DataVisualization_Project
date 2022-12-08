@@ -69,19 +69,23 @@ const CountyMap = () => {
   const [selectedState, setSelectedState] = useState("Alabama");
   const [selectedStateId, setSelectedStateId] = useState("1");
   const[tooltipData, setTooltipData] = useState([]);
-
-  const getTest = (props) => {
+  const[deathRateRange, setDeathRateRange] = useState([40,0 ]);
+  const [populationRange, setPopulationRange] = useState([ 1000000000, 0]);
+  
+  const getText = (props) => {
     let text = "";
     
     tooltipData.forEach((element) => {
       if (element["FIPS"] == props.GEOID) {
-        console.log("element", element);
-        text = element["County"] + " " + " deathRate=" + element.deathRate;
+        if(selectedOption === "populationDropdown")
+          text = element["County"] + " " + " population=" + element["Population"];
+        else
+          text = element["County"] + " " + " deathRate=" + element.deathRate;
       }
     });
     return text;
   };
-  
+
   useEffect(() => {
     const yearData = countyData.filter((d) => {
       return d.Year == selectedYear;
@@ -97,10 +101,10 @@ const CountyMap = () => {
 
   const colorScalePopulation = d3
     .scaleSequential(d3.schemeGreens[3])
-    .domain([0, 1000000]);
+    .domain([populationRange[0], populationRange[1]]);
   const colorScaleDeathrate = d3
     .scaleSequential(d3.schemeOranges[3])
-    .domain([0, 20]);
+    .domain([deathRateRange[0], deathRateRange[1]]);
 
   //Adding a tooltip
   const tooltip = d3
@@ -131,8 +135,7 @@ const CountyMap = () => {
       .style("border-radius", "5px")
       .style("background-color", "#ebf8e7")
       .style("padding", "5px")
-      // .text(d.target.__data__.properties.COUNTY_STATE_NAME)
-      .text(getTest(d.target.__data__.properties))
+      .text(getText(d.target.__data__.properties))
       .transition()
       .duration(300);
   };
@@ -153,11 +156,17 @@ const CountyMap = () => {
       countyData,
       selectedStateId
     );
-    setTooltipData(yearStateWiseData);
+    tooltipData.splice(0, tooltipData.length);
+    tooltipData.push(...yearStateWiseData);
     drawMap(yearStateWiseData);
   }, [selectedYear, selectedOption, selectedStateId]);
 
   const dataPerYear = (year, data, stateFip) => {
+    deathRateRange[0] = 40;
+    deathRateRange[1] = 0;
+    populationRange[0] = 1000000000;
+    populationRange[1] = 0;
+    
     const yearWiseData = data.filter((d) => {
       return d.Year == year && d["FIPS State"] == stateFip;
     });
@@ -177,6 +186,11 @@ const CountyMap = () => {
       if (element["FIPS"].toString().length == 4)
         element["FIPS"] = "0" + element["FIPS"].toString();
       else element["FIPS"] = element["FIPS"].toString();
+
+      deathRateRange[0] = Math.min(deathRateRange[0], element.deathRate);
+      deathRateRange[1] = Math.max(deathRateRange[1], element.deathRate);
+      populationRange[0] = Math.min(populationRange[0], element.Population);
+      populationRange[1] = Math.max(populationRange[1], element.Population);
     });
     return yearWiseData;
   };
@@ -246,7 +260,7 @@ const CountyMap = () => {
           <svg id="canvas" style={{ border: "2px solid gold" }} />
 
           <div className="legend">
-            {selectedOption === "deathRateDropdown" ? 0 : 0}
+            {selectedOption === "deathRateDropdown" ? deathRateRange[0] : populationRange[0]}
             <svg style={{ height: "20", width: "950" }}>
               <defs>
                 <linearGradient
@@ -264,7 +278,7 @@ const CountyMap = () => {
 
               <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
             </svg>
-            {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+            {selectedOption === "deathRateDropdown" ? deathRateRange[1] : populationRange[1]}
           </div>
         </div>
         <div className="base-container">

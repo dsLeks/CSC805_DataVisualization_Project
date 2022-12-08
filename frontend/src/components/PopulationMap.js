@@ -5,13 +5,16 @@ import countyData from "./countyData.json";
 import "../css/PopulationMap.css";
 
 const PopulationMap = () => {
-  const years = [1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015]
-  
+  const years = [
+    1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+    2011, 2012, 2013, 2014, 2015,
+  ];
+
   const geoData = geojsonData;
   const height = 700;
   const width = 1000;
   const svgRef = useRef();
-  
+
   const projRef = useRef(
     d3
       .geoAlbersUsa()
@@ -24,11 +27,11 @@ const PopulationMap = () => {
     React.useState("deathRateDropdown");
 
   const colorScalePopulation = d3
-  .scaleSequential(d3.schemeGreens[3])
-  .domain([0,1000000] );
+    .scaleSequential(d3.schemeGreens[3])
+    .domain([0, 1000000]);
   const colorScaleDeathrate = d3
     .scaleSequential(d3.schemeOranges[3])
-    .domain([0, 30]);
+    .domain([0, 15]);
   //Adding a tooltip
   const tooltip = d3
     .select("body")
@@ -69,20 +72,15 @@ const PopulationMap = () => {
       .transition()
       .duration(200)
       .style("opacity", 1)
-      .style("stroke", "none");
+      .style("stroke", "white");
     tooltip.transition().duration(300).style("opacity", 0);
   };
 
   const dataPerYear = (year, data) => {
     const yearWiseData = data.filter((d) => {
-      if (!years.includes(d["Year"])) {
-        years.push(d["Year"]);
-      }
       return d.Year == year;
     });
-    //sort years for dropdown
-    years.sort();
-    console.log(years);
+
     const stateFips = [];
     const statewiseData = [];
     yearWiseData.forEach((element) => {
@@ -99,7 +97,6 @@ const PopulationMap = () => {
       if (!stateFips.includes(element["FIPS State"])) {
         stateFips.push(element["FIPS State"]);
       }
-
     });
 
     stateFips.forEach((element) => {
@@ -126,7 +123,6 @@ const PopulationMap = () => {
   };
 
   useEffect(() => {
-    console.log("Use Effect");
     const yearWiseData = dataPerYear(selectedYear, countyData);
 
     var index;
@@ -155,8 +151,6 @@ const PopulationMap = () => {
                 var d_state_fips = d.properties.STATEFP;
                 for (i = 0; i < yearWiseData.length; i++) {
                   if (d_state_fips == yearWiseData[i].StateFIPS) {
-                    console.log(selectedOption);
-
                     if (selectedOption === "deathRateDropdown") {
                       return colorScaleDeathrate(yearWiseData[i].deathRate);
                     } else {
@@ -170,7 +164,7 @@ const PopulationMap = () => {
                 return d.properties.NAME;
               })
               .attr("class", "State")
-              .attr("stroke", "none")
+              .attr("stroke", "white")
               .on("click", function (event, d) {
                 const { x, y, width, height } = this.getBBox();
                 const state = d3
@@ -211,47 +205,54 @@ const PopulationMap = () => {
   };
   return (
     <>
-    <div className="home-container">
-      <div className="svgs">
-        <svg ref={svgRef}></svg>
-        
-        <div>
-        {selectedOption === "deathRateDropdown" ? 0 : 0}
-          <svg style={{height:'20', width: '950'}}>
-            <defs>
-              <linearGradient
-                id="linear-gradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="0%"
-              >
-                <stop offset="0%" stop-color="#eaf9e5"></stop>
-                <stop offset="80%" stop-color="#6ac263"></stop>
-                <stop offset="100%" stop-color="#001f00"></stop>
-              </linearGradient>
-            </defs>
-            
-            <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
-            
-          </svg>
-          {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+      <div className="heading">
+        <h1 id="title">Drug Poisoning Mortality Rate</h1>
+        <h3 id="description">USA State Map</h3>
+      </div>
+      <div className="home-container">
+        <div className="svgs">
+          <svg ref={svgRef} style={{ border: "2px solid gold" }}></svg>
+
+          <div className="legend">
+            {selectedOption === "deathRateDropdown" ? 0 : 0}
+            <svg style={{ height: "20", width: "950" }}>
+              <defs>
+                <linearGradient
+                  id="linear-gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stop-color="#eaf9e5"></stop>
+                  <stop offset="80%" stop-color="#6ac263"></stop>
+                  <stop offset="100%" stop-color="#001f00"></stop>
+                </linearGradient>
+              </defs>
+
+              <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
+            </svg>
+            {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+          </div>
+        </div>
+
+        <div className="base-container">
+          <h2 id="filters">Please Select Below Filter</h2>
+          <div className="dropdownTag">
+            <select onChange={changeSelectOptionHandler} className="chooseYear">
+              {years.map((element) => (
+                <option value={element}>{element}</option>
+              ))}
+            </select>
+            <br />
+            <br />
+            <select onChange={selectOptionHandler} className="chooseOption">
+              <option value="deathRateDropdown">Death Rate</option>
+              <option value="populationDropdown">Population</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div className="base-container">
-        <select onChange={changeSelectOptionHandler} name="chooseYear">
-          {years.map((element) => (
-            <option value={element}>{element}</option>
-          ))}
-        </select>
-        <br />
-        <br />
-        <select onChange={selectOptionHandler} name="chooseOption">
-          <option value="deathRateDropdown">Death Rate</option>
-          <option value="populationDropdown">Population</option>
-        </select>
-      </div>
-    </div>
     </>
   );
 };

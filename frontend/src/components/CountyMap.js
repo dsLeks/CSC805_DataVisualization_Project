@@ -1,18 +1,146 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
-// import { Col, Row, Container } from "react-bootstrap";
-import "../css/StateMap.css";
+import "../css/CountyMap.css";
 import countyGeoJson from "../data/countiesGeoJson.json";
 import countyData from "./countyData.json";
 
 const CountyMap = () => {
-  const STATE = "08";
-  const YEAR = "2015";
+  const years = [
+    1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+    2011, 2012, 2013, 2014, 2015,
+  ];
+  const stateNames = [
+    "Alabama",
+    "Alaska",
+    "Arizona",
+    "Arkansas",
+    "California",
+    "Colorado",
+    "Connecticut",
+    "Delaware",
+    "District of Columbia",
+    "Florida",
+    "Georgia",
+    "Hawaii",
+    "Idaho",
+    "Illinois",
+    "Indiana",
+    "Iowa",
+    "Kansas",
+    "Kentucky",
+    "Louisiana",
+    "Maine",
+    "Maryland",
+    "Massachusetts",
+    "Michigan",
+    "Minnesota",
+    "Mississippi",
+    "Missouri",
+    "Montana",
+    "Nebraska",
+    "Nevada",
+    "New Hampshire",
+    "New Jersey",
+    "New Mexico",
+    "New York",
+    "North Carolina",
+    "North Dakota",
+    "Ohio",
+    "Oklahoma",
+    "Oregon",
+    "Pennsylvania",
+    "Rhode Island",
+    "South Carolina",
+    "South Dakota",
+    "Tennessee",
+    "Texas",
+    "Utah",
+    "Vermont",
+    "Virginia",
+    "Washington",
+    "West Virginia",
+    "Wisconsin",
+    "Wyoming",
+  ];
+
+  const [selectedYear, setSelectedYear] = useState("1999");
+  const [selectedOption, setSelectedOption] =
+    React.useState("deathRateDropdown");
+  const [selectedState, setSelectedState] = useState("Alabama");
+  const [selectedStateId, setSelectedStateId] = useState("1");
+
   useEffect(() => {
-    const yearStateWiseData = dataPerYear(YEAR, countyData, STATE);
-    console.log(yearStateWiseData);
+    const yearData = countyData.filter((d) => {
+      return d.Year == selectedYear;
+    });
+
+    let stateId = yearData.find((item) => {
+      if (item["State"] === selectedState) {
+        return item["FIPS State"];
+      }
+    });
+    setSelectedStateId(stateId["FIPS State"]);
+  }, [selectedYear, selectedState]);
+
+  const colorScalePopulation = d3
+    .scaleSequential(d3.schemeGreens[3])
+    .domain([0, 1000000]);
+  const colorScaleDeathrate = d3
+    .scaleSequential(d3.schemeOranges[3])
+    .domain([0, 20]);
+
+  //Adding a tooltip
+  const tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+  //Creating mouseOver functionality
+  let mouseOver = function (d) {
+    d3.selectAll(".State")
+      .transition()
+      .duration(300)
+      .style("opacity", 0.2)
+      .style("stroke", "transparent");
+    d3.select(this)
+      .transition()
+      .duration(300)
+      .style("opacity", 1)
+      .style("stroke", "black");
+
+    tooltip
+      .style("left", d.x + "px")
+      .style("top", d.y + "px")
+      .style("opacity", 1)
+      .style("position", "absolute")
+      .style("border", "solid")
+      .style("border-radius", "5px")
+      .style("background-color", "#ebf8e7")
+      .style("padding", "5px")
+      .text(d.target.__data__.properties.COUNTY_STATE_NAME)
+      .transition()
+      .duration(300);
+  };
+
+  //Creating mouseLeave functionality
+  let mouseLeave = function (d) {
+    d3.selectAll("path")
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      .style("stroke", "black");
+    tooltip.transition().duration(300).style("opacity", 0);
+  };
+
+  useEffect(() => {
+    const yearStateWiseData = dataPerYear(
+      selectedYear,
+      countyData,
+      selectedStateId
+    );
     drawMap(yearStateWiseData);
-  });
+  }, [selectedYear, selectedOption, selectedStateId]);
 
   const dataPerYear = (year, data, stateFip) => {
     const yearWiseData = data.filter((d) => {
@@ -39,16 +167,13 @@ const CountyMap = () => {
   };
   const drawMap = (yearStateWiseData) => {
     const canvas = d3.select("#canvas");
-    const tooltip = d3.select("#tooltip");
     const countyDataFeatures = countyGeoJson.features;
-
+    // console.log(yearStateWiseData);
     const stateWiseFeatures = [];
     countyDataFeatures.forEach((element) => {
-      if (element.properties.GEOID.substring(0, 2) == STATE)
+      if (element.properties.GEOID.substring(0, 2) == selectedStateId)
         stateWiseFeatures.push(element);
     });
-
-    console.log(stateWiseFeatures);
 
     canvas
       .append("g")
@@ -60,108 +185,97 @@ const CountyMap = () => {
         "d",
         d3
           .geoPath()
-          .projection(d3.geoAlbers().scale(1000).translate([400, 300]))
+          .projection(d3.geoAlbersUsa().scale(1300).translate([500, 300]))
       )
       .attr("stroke", (element) => {
         if (stateWiseFeatures.includes(element)) return "black";
-        else return "#D3D3D3";
+        else return "#000000";
       })
-      .attr("fill", (stateDataFeaturesItem) => {
-        let id = stateDataFeaturesItem.properties.GEOID;
-        let county = yearStateWiseData.find((item) => {
-          return item["FIPS"] === id;
-        });
-        if (county != undefined) {
-          let rate = county.deathRate;
-          if (rate <= 10) {
-            return "limegreen";
-          } else if (rate <= 12) {
-            return "lightgreen";
-          } else if (rate <= 20) {
-            return "orange";
-          } else {
-            return "red";
+      .attr("fill", function (d) {
+        let id = d.properties.GEOID;
+        let i;
+        for (i = 0; i < yearStateWiseData.length; i++) {
+          if (id === yearStateWiseData[i].FIPS) {
+            if (selectedOption === "deathRateDropdown") {
+              return colorScaleDeathrate(yearStateWiseData[i].deathRate);
+            } else {
+              return colorScalePopulation(yearStateWiseData[i].Population);
+            }
           }
-        } else {
-          return "white";
         }
-      });
-    //   .attr("data-fips", (stateDataFeaturesItem) => {
-    //     return stateDataFeaturesItem.properties.FID;
-    //   })
-    //   .attr("data-rate", (stateDataFeaturesItem) => {
-    //     let id = stateDataFeaturesItem.properties.FID;
-    //     let state = visStateData.find((item) => {
-    //       return item["FIPS State"] === id;
-    //     });
-    //     let rate = state["Estimated Age"];
+      })
+      .on("mouseover", mouseOver)
+      .on("mouseleave", mouseLeave);
+  };
 
-    //     return rate;
-    //   })
-    //   .on("mouseover", (stateDataFeaturesItem) => {
-    //     tooltip.transition().style("visibility", "visible");
-    //     let id = stateDataFeaturesItem["properties.FID"];
+  const changeSelectOptionHandler = (event) => {
+    setSelectedYear(event.target.value);
+  };
 
-    //     let state = visStateData.find((item) => {
-    //       return item["FIPS State"] === id;
-    //     });
-    //     // let state = visStateData.find((item) => {
-    //     //   return item["FIPS State"] === id;
-    //     // });
+  const selectOptionHandler = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
-    //     tooltip.text(
-    //       state["FIPS State"] +
-    //         "-" +
-    //         state["Population"] +
-    //         "," +
-    //         state["State"] +
-    //         ":" +
-    //         state["Estimated Age"] +
-    //         "%"
-    //     );
-
-    //     tooltip.attr("data-rate", state["Estimated Age"]);
-    //   })
-    //   .on("mouseout", (stateDataFeaturesItem) => {
-    //     tooltip.transition().style("visibility", "hidden");
-    //   });
+  const selectStateHandler = (event) => {
+    setSelectedState(event.target.value);
   };
 
   return (
     <>
-      <br />
-      <h2 id="title">Drug Poisoning Mortality Rate</h2>
-      <div id="description">USA County Map</div>
-      <div id="tooltip"></div>
-      <svg id="canvas" style={{ border: "2px solid gold" }} />
-      <svg id="legend">
-        <g>
-          <rect x="10" y="0" width="40" height="40" fill="limegreen"></rect>
-          <text x="60" y="20" fill="black">
-            less than 10%
-          </text>
-        </g>
-        <g>
-          <rect x="10" y="40" width="40" height="40" fill="lightgreen"></rect>
-          <text x="60" y="60" fill="black">
-            10% than 12%
-          </text>
-        </g>
-        <g>
-          <rect x="10" y="80" width="40" height="40" fill="orange"></rect>
-          <text x="60" y="100" fill="black">
-            12% than 20%
-          </text>
-        </g>
-        <g>
-          <rect x="10" y="120" width="40" height="40" fill="tomato"></rect>
-          <text x="60" y="140" fill="black">
-            more than 20%
-          </text>
-        </g>
-      </svg>
+      <div className="heading">
+        <h1 id="title">Drug Poisoning Mortality Rate</h1>
+        <h3 id="description">USA County Map</h3>
+      </div>
+      <div className="home-container">
+        <div className="svgs">
+          <svg id="canvas" style={{ border: "2px solid gold" }} />
 
-      <br />
+          <div className="legend">
+            {selectedOption === "deathRateDropdown" ? 0 : 0}
+            <svg style={{ height: "20", width: "950" }}>
+              <defs>
+                <linearGradient
+                  id="linear-gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#eaf9e5"></stop>
+                  <stop offset="80%" stopColor="#6ac263"></stop>
+                  <stop offset="100%" stopColor="#001f00"></stop>
+                </linearGradient>
+              </defs>
+
+              <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
+            </svg>
+            {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+          </div>
+        </div>
+        <div className="base-container">
+          <h2 id="filters">Please Select Below Filter</h2>
+          <div className="dropdownTag">
+            <select onChange={changeSelectOptionHandler} className="chooseYear">
+              {years.map((element) => (
+                <option value={element}>{element}</option>
+              ))}
+            </select>
+            <br />
+            <br />
+            <select onChange={selectStateHandler} className="chooseState">
+              {stateNames.map((element) => (
+                <option value={element}>{element}</option>
+              ))}
+            </select>
+            <br />
+            <br />
+            <select onChange={selectOptionHandler} className="chooseOption">
+              <option value="deathRateDropdown">Death Rate</option>
+              <option value="populationDropdown">Population</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

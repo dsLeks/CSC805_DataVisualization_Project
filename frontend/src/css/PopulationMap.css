@@ -3,3 +3,20 @@
     stroke-linejoin: round;
     stroke-width: 2px;
 }
+
+.gradient{
+    display: flex;
+    flex-direction: column;
+}
+
+.home-container{
+    padding-top: 50px;
+    display: flex;
+    flex-direction: row;
+}
+
+.base-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

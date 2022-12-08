@@ -2,21 +2,16 @@ import React, { useRef, useEffect, useState } from "react";
 var d3 = require("d3");
 import geojsonData from "./geojsonData.json";
 import countyData from "./countyData.json";
-import { useData } from "./useData";
-import { legendColor } from "d3-svg-legend";
 import "../css/PopulationMap.css";
-import { Form } from "react-bootstrap";
-import { max } from "d3";
+
 const PopulationMap = () => {
-  const [years, setYears] = useState([]);
-  const [minimum, setMinimum] = useState(0);
-  const [maximum, setMaximum] = useState(0);
+  const years = [1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015]
+  
   const geoData = geojsonData;
-  const height = 800;
+  const height = 700;
   const width = 1000;
-  const data = useData();
   const svgRef = useRef();
-  const lsvgRef = useRef();
+  
   const projRef = useRef(
     d3
       .geoAlbersUsa()
@@ -29,12 +24,11 @@ const PopulationMap = () => {
     React.useState("deathRateDropdown");
 
   const colorScalePopulation = d3
-    .scaleSequential(d3.schemeGreens[3])
-    .domain([600000, 5800000]);
+  .scaleSequential(d3.schemeGreens[3])
+  .domain([0,1000000] );
   const colorScaleDeathrate = d3
     .scaleSequential(d3.schemeOranges[3])
-    .domain([5, 20]);
-
+    .domain([0, 30]);
   //Adding a tooltip
   const tooltip = d3
     .select("body")
@@ -88,6 +82,7 @@ const PopulationMap = () => {
     });
     //sort years for dropdown
     years.sort();
+    console.log(years);
     const stateFips = [];
     const statewiseData = [];
     yearWiseData.forEach((element) => {
@@ -104,6 +99,7 @@ const PopulationMap = () => {
       if (!stateFips.includes(element["FIPS State"])) {
         stateFips.push(element["FIPS State"]);
       }
+
     });
 
     stateFips.forEach((element) => {
@@ -133,15 +129,6 @@ const PopulationMap = () => {
     console.log("Use Effect");
     const yearWiseData = dataPerYear(selectedYear, countyData);
 
-    yearWiseData.forEach((element) => {
-      console.log(element.deathRate);
-      setMinimum(Math.min(element.deathRate));
-      setMaximum(Math.max(element.deathRate));
-    });
-
-    console.log("after change");
-    console.log(minimum);
-    console.log(maximum);
     var index;
     //Drawing the Choropleth Map - for population
     if (yearWiseData.length > 1 && typeof yearWiseData !== "undefined") {
@@ -213,7 +200,7 @@ const PopulationMap = () => {
     } else {
       console.log("yearWiseData is empty");
     }
-  }, [selectedYear, selectedOption, years, minimum, maximum]);
+  }, [selectedYear, selectedOption]);
 
   const changeSelectOptionHandler = (event) => {
     setSelectedYear(event.target.value);
@@ -224,7 +211,33 @@ const PopulationMap = () => {
   };
   return (
     <>
-      <svg ref={svgRef}></svg>
+    <div className="home-container">
+      <div className="svgs">
+        <svg ref={svgRef}></svg>
+        
+        <div>
+        {selectedOption === "deathRateDropdown" ? 0 : 0}
+          <svg style={{height:'20', width: '950'}}>
+            <defs>
+              <linearGradient
+                id="linear-gradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stop-color="#eaf9e5"></stop>
+                <stop offset="80%" stop-color="#6ac263"></stop>
+                <stop offset="100%" stop-color="#001f00"></stop>
+              </linearGradient>
+            </defs>
+            
+            <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
+            
+          </svg>
+          {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+        </div>
+      </div>
       <div className="base-container">
         <select onChange={changeSelectOptionHandler} name="chooseYear">
           {years.map((element) => (
@@ -238,25 +251,7 @@ const PopulationMap = () => {
           <option value="populationDropdown">Population</option>
         </select>
       </div>
-      <br />
-      <div>
-        <svg>
-          <defs>
-            <linearGradient
-              id="linear-gradient"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-            >
-              <stop offset="0%" stop-color="#eaf9e5"></stop>
-              <stop offset="80%" stop-color="#6ac263"></stop>
-              <stop offset="100%" stop-color="#001f00"></stop>
-            </linearGradient>
-          </defs>
-          <rect width="300" height="20" fill="url(#linear-gradient)"></rect>
-        </svg>
-      </div>
+    </div>
     </>
   );
 };

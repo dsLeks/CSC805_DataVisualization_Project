@@ -103,14 +103,7 @@ const CountyMap = () => {
     setSelectedStateId(stateId["FIPS State"]);
   }, [selectedYear, selectedState]);
 
-  // color schema for death rate and population
-  const colorScalePopulation = d3
-    .scaleSequential(d3.schemeGreens[3])
-    .domain([populationRange[0], populationRange[1]]);
 
-  const colorScaleDeathrate = d3
-    .scaleSequential(d3.schemeOranges[3])
-    .domain([deathRateRange[0], deathRateRange[1]]);
 
   //Adding a tooltip
   const tooltip = d3
@@ -121,16 +114,16 @@ const CountyMap = () => {
 
   //Creating mouseOver functionality
   let mouseOver = function (d) {
-    d3.selectAll(".State")
-      .transition()
-      .duration(300)
-      .style("opacity", 0.2)
-      .style("stroke", "transparent");
-    d3.select(this)
-      .transition()
-      .duration(300)
-      .style("opacity", 1)
-      .style("stroke", "black");
+    // d3.selectAll(".State")
+    //   .transition()
+    //   .duration(300)
+    //   .style("opacity", 0.2)
+    //   .style("stroke", "#D3D3D3");
+    // d3.select(this)
+    //   .transition()
+    //   .duration(300)
+    //   .style("opacity", 1)
+    //   .style("stroke", "#D3D3D3");
 
     tooltip
       .style("left", d.x + "px")
@@ -147,14 +140,14 @@ const CountyMap = () => {
   };
 
   //Creating mouseLeave functionality
-  let mouseLeave = function (d) {
-    d3.selectAll("path")
-      .transition()
-      .duration(200)
-      .style("opacity", 1)
-      .style("stroke", "black");
-    tooltip.transition().duration(300).style("opacity", 0);
-  };
+  // let mouseLeave = function (d) {
+  //   d3.selectAll("path")
+  //     .transition()
+  //     .duration(200)
+  //     .style("opacity", 1)
+  //     .style("stroke", "#D3D3D3");
+  //   tooltip.transition().duration(300).style("opacity", 0);
+  // };
 
   // to draw the map
   useEffect(() => {
@@ -213,6 +206,13 @@ const CountyMap = () => {
         stateWiseFeatures.push(element);
     });
 
+    const colorScalePopulation = d3
+    .scaleSequential(d3.schemeGreens[3])
+    .domain([populationRange[0], populationRange[1]]);
+  const colorScaleDeathrate = d3
+    .scaleSequential(d3.schemeOranges[3])
+    .domain([deathRateRange[0], deathRateRange[1]]);
+
     canvas
       .append("g")
       .selectAll("path")
@@ -227,7 +227,7 @@ const CountyMap = () => {
       )
       .attr("stroke", (element) => {
         if (stateWiseFeatures.includes(element)) return "black";
-        else return "#000000";
+        else return "#D3D3D3";
       })
       .attr("fill", function (d) {
         let id = d.properties.GEOID;
@@ -241,9 +241,10 @@ const CountyMap = () => {
             }
           }
         }
+        return "white";
       })
       .on("mouseover", mouseOver)
-      .on("mouseleave", mouseLeave);
+      // .on("mouseleave", mouseLeave);
   };
 
   // change the dropdown value

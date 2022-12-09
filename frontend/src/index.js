@@ -34,7 +34,9 @@ const router = createBrowserRouter([
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+  <div style={{background: 'white'}}>
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  </div>
 );

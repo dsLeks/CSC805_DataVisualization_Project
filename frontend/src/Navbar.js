@@ -7,11 +7,6 @@ export default function Navbar() {
     <>
       <ul className="nav-bar">
         <li className="nav-item">
-          <Link to={`HistoricData`}>
-            <button className="nav-item-link">Historic Data</button>
-          </Link>
-        </li>
-        <li className="nav-item">
           <Link to={`Dashboard`}>
             <button className="nav-item-link">State Map</button>
           </Link>
@@ -19,6 +14,11 @@ export default function Navbar() {
         <li className="nav-item">
           <Link to={`CountyMap`}>
             <button className="nav-item-link">County Map</button>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link to={`HistoricData`}>
+            <button className="nav-item-link">Historic Data</button>
           </Link>
         </li>
       </ul>

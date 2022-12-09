@@ -25,6 +25,11 @@ svg {
     padding-left: 80px;
 }
 
+/* .axis-container { */
+/* padding-top: 5px; */
+/* padding-left: 20px; */
+/* } */
+
 .base-container {
     display: flex;
     flex-direction: column;

@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 var d3 = require("d3");
-import geojsonData from "./geojsonData.json";
-import countyData from "./countyData.json";
-import "../css/PopulationMap.css";
+import geojsonData from "../data/geojsonData.json";
+import countyData from "../data/countyData.json";
+import "../css/Component.css";
 
 const PopulationMap = () => {
   const years = [
@@ -11,7 +11,7 @@ const PopulationMap = () => {
   ];
 
   const geoData = geojsonData;
-  const height = 700;
+  const height = 650;
   const width = 1000;
   const svgRef = useRef();
 
@@ -19,19 +19,42 @@ const PopulationMap = () => {
     d3
       .geoAlbersUsa()
       .scale(1200)
-      .translate([width / 2, height / 2.5])
+      .translate([width / 2, height / 2.2])
   );
 
-  const [selectedYear, setSelectedYear] = React.useState("1999");
-  const [selectedOption, setSelectedOption] =
-    React.useState("deathRateDropdown");
+  // useState hook to store the selected year as initial value
+  const [selectedYear, setSelectedYear] = useState("1999");
+  const [selectedOption, setSelectedOption] = useState("deathRateDropdown");
+  const [tooltipData, setTooltipData] = useState([]);
+  const [deathRateRange, setDeathRateRange] = useState([40, 0]);
+  const [populationRange, setPopulationRange] = useState([10000000000, 0]);
 
+  // color scale for population and death rate
   const colorScalePopulation = d3
     .scaleSequential(d3.schemeGreens[3])
     .domain([0, 1000000]);
   const colorScaleDeathrate = d3
     .scaleSequential(d3.schemeOranges[3])
     .domain([0, 15]);
+
+  // to display on tooltip
+  const getText = (props) => {
+    let text = "";
+    console.log(props);
+    console.log(tooltipData);
+    tooltipData.forEach((element) => {
+      if (element["StateFIPS"] == props.STATEFP) {
+        if (selectedOption === "populationDropdown")
+          text =
+            element["stateName"] + "," + " Population:" + element.population;
+        else
+          text =
+            element["stateName"] + "," + " Death Rate:" + element.deathRate;
+      }
+      return "white";
+    });
+    return text;
+  };
   //Adding a tooltip
   const tooltip = d3
     .select("body")
@@ -61,7 +84,7 @@ const PopulationMap = () => {
       .style("border-radius", "5px")
       .style("background-color", "#ebf8e7")
       .style("padding", "5px")
-      .text(d.target.__data__.properties.NAME)
+      .text(getText(d.target.__data__.properties))
       .transition()
       .duration(300);
   };
@@ -76,13 +99,20 @@ const PopulationMap = () => {
     tooltip.transition().duration(300).style("opacity", 0);
   };
 
+  //Creating a function to get the data for a particular year
   const dataPerYear = (year, data) => {
+    deathRateRange[0] = 40;
+    deathRateRange[1] = 0;
+    populationRange[0] = 1000000000;
+    populationRange[1] = 0;
+
     const yearWiseData = data.filter((d) => {
       return d.Year == year;
     });
 
     const stateFips = [];
     const statewiseData = [];
+    const stateNames = [];
     yearWiseData.forEach((element) => {
       const deathRate =
         element["Estimated Age-adjusted Death Rate, 16 Categories (in ranges)"];
@@ -97,6 +127,14 @@ const PopulationMap = () => {
       if (!stateFips.includes(element["FIPS State"])) {
         stateFips.push(element["FIPS State"]);
       }
+      if (!stateNames.includes(element["State"])) {
+        stateNames.push(element["State"]);
+      }
+
+      deathRateRange[0] = Math.min(deathRateRange[0], element.deathRate);
+      deathRateRange[1] = Math.max(deathRateRange[1], element.deathRate);
+      populationRange[0] = Math.min(populationRange[0], element.Population);
+      populationRange[1] = Math.max(populationRange[1], element.Population);
     });
 
     stateFips.forEach((element) => {
@@ -113,19 +151,23 @@ const PopulationMap = () => {
       });
       const state = {
         StateFIPS: element,
-        deathRate: sum / stateData.length,
+        deathRate: (sum / stateData.length).toFixed(2),
         population: totalpopulation,
         year: year,
+        stateName: stateNames[stateFips.indexOf(element)],
       };
       statewiseData.push(state);
     });
+
     return statewiseData;
   };
 
+  // useEffect hook to draw the choropleth map
   useEffect(() => {
     const yearWiseData = dataPerYear(selectedYear, countyData);
+    tooltipData.splice(0, tooltipData.length);
+    tooltipData.push(...yearWiseData);
 
-    var index;
     //Drawing the Choropleth Map - for population
     if (yearWiseData.length > 1 && typeof yearWiseData !== "undefined") {
       const svg = d3
@@ -165,27 +207,6 @@ const PopulationMap = () => {
               })
               .attr("class", "State")
               .attr("stroke", "white")
-              .on("click", function (event, d) {
-                const { x, y, width, height } = this.getBBox();
-                const state = d3
-                  .select(this)
-                  .attr(
-                    "transform-origin",
-                    `${x + width / 2}px ${y + height / 2}px`
-                  )
-                  .remove();
-                svg.append(() => state.node());
-
-                d.properties.expanded = !d.properties.expanded;
-
-                state
-                  .transition()
-                  .duration(500)
-                  .attr(
-                    "transform",
-                    d.properties.expanded ? "scale(1.25)" : "scale(1)"
-                  );
-              })
               .on("mouseover", mouseOver)
               .on("mouseleave", mouseLeave),
           (update) => update,
@@ -207,32 +228,56 @@ const PopulationMap = () => {
     <>
       <div className="heading">
         <h1 id="title">Drug Poisoning Mortality Rate</h1>
-        <h3 id="description">USA State Map</h3>
+        <h2 id="description">USA State Map</h2>
       </div>
       <div className="home-container">
         <div className="svgs">
           <svg ref={svgRef} style={{ border: "2px solid gold" }}></svg>
-
+          <h5 className="legendHeading">Range Distribution</h5>
           <div className="legend">
-            {selectedOption === "deathRateDropdown" ? 0 : 0}
-            <svg style={{ height: "20", width: "950" }}>
-              <defs>
-                <linearGradient
-                  id="linear-gradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="0%"
-                >
-                  <stop offset="0%" stop-color="#eaf9e5"></stop>
-                  <stop offset="80%" stop-color="#6ac263"></stop>
-                  <stop offset="100%" stop-color="#001f00"></stop>
-                </linearGradient>
-              </defs>
+            <div className="leftLegend">
+              {selectedOption === "deathRateDropdown"
+                ? deathRateRange[0]
+                : populationRange[0]}
+            </div>
+            <div className="legendBar">
+              <svg style={{ height: "20", width: "800" }}>
+                <defs>
+                  <linearGradient
+                    id="linear-gradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%"
+                  >
+                    {selectedOption === "deathRateDropdown" ? (
+                      <>
+                        <stop offset="0%" stopColor="#fee6ce"></stop>
+                        <stop offset="50%" stopColor="#fdae6b"></stop>
+                        <stop offset="100%" stopColor="#f03b20"></stop>{" "}
+                      </>
+                    ) : (
+                      <>
+                        <stop offset="0%" stopColor="#eaf9e5"></stop>
+                        <stop offset="50%" stopColor="#6ac263"></stop>
+                        <stop offset="100%" stopColor="#001f00"></stop>
+                      </>
+                    )}
+                  </linearGradient>
+                </defs>
 
-              <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
-            </svg>
-            {selectedOption === "deathRateDropdown" ? 30 : 1000000}
+                <rect
+                  width="800"
+                  height="20"
+                  fill="url(#linear-gradient)"
+                ></rect>
+              </svg>
+            </div>
+            <div className="rightLegend">
+              {selectedOption === "deathRateDropdown"
+                ? deathRateRange[1]
+                : populationRange[1]}
+            </div>
           </div>
         </div>
 

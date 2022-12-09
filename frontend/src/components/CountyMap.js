@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
-import "../css/CountyMap.css";
+import "../css/Component.css";
 import countyGeoJson from "../data/countiesGeoJson.json";
-import countyData from "./countyData.json";
+import countyData from "../data/countyData.json";
 
 const CountyMap = () => {
   const years = [
@@ -64,28 +64,32 @@ const CountyMap = () => {
   ];
 
   const [selectedYear, setSelectedYear] = useState("1999");
-  const [selectedOption, setSelectedOption] =
-    React.useState("deathRateDropdown");
+  const [selectedOption, setSelectedOption] = useState("deathRateDropdown");
   const [selectedState, setSelectedState] = useState("Alabama");
   const [selectedStateId, setSelectedStateId] = useState("1");
-  const[tooltipData, setTooltipData] = useState([]);
-  const[deathRateRange, setDeathRateRange] = useState([40,0 ]);
-  const [populationRange, setPopulationRange] = useState([ 1000000000, 0]);
-  
+  const [tooltipData, setTooltipData] = useState([]);
+  const [deathRateRange, setDeathRateRange] = useState([40, 0]);
+  const [populationRange, setPopulationRange] = useState([1000000000, 0]);
+
+  // to display on tooltip
   const getText = (props) => {
     let text = "";
-    
+    console.log(props);
+    console.log(tooltipData);
     tooltipData.forEach((element) => {
       if (element["FIPS"] == props.GEOID) {
-        if(selectedOption === "populationDropdown")
-          text = element["County"] + " " + " population=" + element["Population"];
+        if (selectedOption === "populationDropdown")
+          text =
+            element["County"] + " " + " population:" + element["Population"];
         else
-          text = element["County"] + " " + " deathRate=" + element.deathRate;
+          text = element["County"] + " " + " Death Rate:" + element.deathRate;
       }
+      return "white";
     });
     return text;
   };
 
+  //  to calculate the state id suing states names
   useEffect(() => {
     const yearData = countyData.filter((d) => {
       return d.Year == selectedYear;
@@ -99,9 +103,11 @@ const CountyMap = () => {
     setSelectedStateId(stateId["FIPS State"]);
   }, [selectedYear, selectedState]);
 
+  // color schema for death rate and population
   const colorScalePopulation = d3
     .scaleSequential(d3.schemeGreens[3])
     .domain([populationRange[0], populationRange[1]]);
+
   const colorScaleDeathrate = d3
     .scaleSequential(d3.schemeOranges[3])
     .domain([deathRateRange[0], deathRateRange[1]]);
@@ -150,6 +156,7 @@ const CountyMap = () => {
     tooltip.transition().duration(300).style("opacity", 0);
   };
 
+  // to draw the map
   useEffect(() => {
     const yearStateWiseData = dataPerYear(
       selectedYear,
@@ -161,12 +168,13 @@ const CountyMap = () => {
     drawMap(yearStateWiseData);
   }, [selectedYear, selectedOption, selectedStateId]);
 
+  // to draw the map, called in useEffect to update the map on change of year or state
   const dataPerYear = (year, data, stateFip) => {
     deathRateRange[0] = 40;
     deathRateRange[1] = 0;
     populationRange[0] = 1000000000;
     populationRange[1] = 0;
-    
+
     const yearWiseData = data.filter((d) => {
       return d.Year == year && d["FIPS State"] == stateFip;
     });
@@ -194,10 +202,11 @@ const CountyMap = () => {
     });
     return yearWiseData;
   };
+
+  // to draw the map, called in useEffect to update the map on change of year or state
   const drawMap = (yearStateWiseData) => {
     const canvas = d3.select("#canvas");
     const countyDataFeatures = countyGeoJson.features;
-    // console.log(yearStateWiseData);
     const stateWiseFeatures = [];
     countyDataFeatures.forEach((element) => {
       if (element.properties.GEOID.substring(0, 2) == selectedStateId)
@@ -237,6 +246,7 @@ const CountyMap = () => {
       .on("mouseleave", mouseLeave);
   };
 
+  // change the dropdown value
   const changeSelectOptionHandler = (event) => {
     setSelectedYear(event.target.value);
   };
@@ -253,32 +263,56 @@ const CountyMap = () => {
     <>
       <div className="heading">
         <h1 id="title">Drug Poisoning Mortality Rate</h1>
-        <h3 id="description">USA County Map</h3>
+        <h2 id="description">USA County Map</h2>
       </div>
       <div className="home-container">
         <div className="svgs">
           <svg id="canvas" style={{ border: "2px solid gold" }} />
-
+          <h5 className="legendHeading">Range Distribution</h5>
           <div className="legend">
-            {selectedOption === "deathRateDropdown" ? deathRateRange[0] : populationRange[0]}
-            <svg style={{ height: "20", width: "950" }}>
-              <defs>
-                <linearGradient
-                  id="linear-gradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="0%"
-                >
-                  <stop offset="0%" stopColor="#eaf9e5"></stop>
-                  <stop offset="80%" stopColor="#6ac263"></stop>
-                  <stop offset="100%" stopColor="#001f00"></stop>
-                </linearGradient>
-              </defs>
+            <div className="leftLegend">
+              {selectedOption === "deathRateDropdown"
+                ? deathRateRange[0]
+                : populationRange[0]}
+            </div>
+            <div className="legendBar">
+              <svg style={{ height: "20", width: "800" }}>
+                <defs>
+                  <linearGradient
+                    id="linear-gradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%"
+                  >
+                    {selectedOption === "deathRateDropdown" ? (
+                      <>
+                        <stop offset="0%" stopColor="#fee6ce"></stop>
+                        <stop offset="50%" stopColor="#fdae6b"></stop>
+                        <stop offset="100%" stopColor="#f03b20"></stop>{" "}
+                      </>
+                    ) : (
+                      <>
+                        <stop offset="0%" stopColor="#eaf9e5"></stop>
+                        <stop offset="50%" stopColor="#6ac263"></stop>
+                        <stop offset="100%" stopColor="#001f00"></stop>
+                      </>
+                    )}
+                  </linearGradient>
+                </defs>
 
-              <rect width="950" height="20" fill="url(#linear-gradient)"></rect>
-            </svg>
-            {selectedOption === "deathRateDropdown" ? deathRateRange[1] : populationRange[1]}
+                <rect
+                  width="800"
+                  height="20"
+                  fill="url(#linear-gradient)"
+                ></rect>
+              </svg>
+            </div>
+            <div className="rightLegend">
+              {selectedOption === "deathRateDropdown"
+                ? deathRateRange[1]
+                : populationRange[1]}
+            </div>
           </div>
         </div>
         <div className="base-container">

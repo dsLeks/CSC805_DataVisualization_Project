@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
-import { select } from "d3";
+import PopulationMap from "./PopulationMap";
   
-
 const Dashboard = () => {
+  
   return (
     <>
-    <h1>This is Dashboard</h1>
+    <PopulationMap />
     </>
   );
 };

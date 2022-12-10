@@ -47,7 +47,7 @@ const config = {
     ]
   },
   devServer: {
-    historyApiFallback: true,
+    historyApiFallback: true, 
     static: {
         directory: path.resolve(__dirname, 'frontend', 'dist')
     }
